@@ -66,7 +66,7 @@ class Pixels(object):
     def to_json_data(self):
         return '{}px'.format(self.num)
 
-    REGEX = re.compile("^(\d+)px$")
+    REGEX = re.compile("^(\d+)(?:px)?$")
 
     @staticmethod
     def parse_json_data(data):
@@ -119,6 +119,7 @@ DASHBOARD_TYPE = 'dashboard'
 GRAPH_TYPE = 'graph'
 SINGLESTAT_TYPE = 'singlestat'
 TEXT_TYPE = 'text'
+TABLE_TYPE = 'table'
 
 DEFAULT_FILL = 1
 DEFAULT_REFRESH = '10s'
@@ -312,6 +313,8 @@ class Target(object):
     errors = attr.ib(default=None)
     interval = attr.ib(default=None)
     target = attr.ib(default=None)
+    alias = attr.ib(default=None)
+    dimensions = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -329,6 +332,8 @@ class Target(object):
             'errors': self.errors,
             'interval': self.interval,
             'target': self.target,
+            'alias': self.alias,
+            'dimensions': self.dimensions,
         }
 
     @staticmethod
@@ -559,6 +564,7 @@ def parse_input(data):
         return DataSourceInput.parse_json_data(data)
     elif object_type == 'constant':
         return ConstantInput.parse_json_data(data)
+    raise Exception("Unknown input type {}".format(object_type))
 
 
 def parse_inputs(inputs):
@@ -1051,6 +1057,9 @@ def parse_panel(panel):
         return Text.parse_json_data(panel)
     elif panel_type == SINGLESTAT_TYPE:
         return SingleStat.parse_json_data(panel)
+    elif panel_type == TABLE_TYPE:
+        return Table.parse_json_data(panel)
+    raise Exception("Unknown panel type {}".format(panel_type))
 
 
 def parse_panels(panels):
@@ -1113,6 +1122,7 @@ class Graph(object):
     scopedVars = attr.ib(default=None)
     repeatIteration = attr.ib(default=None)
     repeatPanelId = attr.ib(default=None)
+    height = attr.ib(default=None)
 
     def to_json_data(self):
         graphObject = {
@@ -1183,6 +1193,9 @@ class Graph(object):
         if 'targets' in data:
             data['targets'] = [Target.parse_json_data(target)
                                for target in data['targets']]
+        if 'height' in data:
+            data['height'] = Pixels.parse_json_data(data['height'])
+
         data.pop('type')
 
         return Graph(**data)
@@ -1394,6 +1407,9 @@ class SingleStat(object):
     valueName = attr.ib(default=VTYPE_DEFAULT)
     valueMaps = attr.ib(default=attr.Factory(list))
     tableColumn = attr.ib(default="")
+    error = attr.ib(default=None)
+    timeFrom = attr.ib(default=None)
+    timeShift = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -1435,6 +1451,9 @@ class SingleStat(object):
             'valueMaps': self.valueMaps,
             'valueName': self.valueName,
             'tableColumn': self.tableColumn,
+            'error': self.error,
+            'timeFrom': self.timeFrom,
+            'timeShift': self.timeShift,
         }
 
     @staticmethod
@@ -1448,6 +1467,68 @@ class SingleStat(object):
         data['sparkline'] = SparkLine.parse_json_data(data['sparkline'])
         data['mappingTypes'] = [Mapping.parse_json_data(map_type)
                                 for map_type in data['mappingTypes']]
+        if 'height' in data:
+            data['height'] = Pixels.parse_json_data(data['height'])
 
         data.pop('type')
         return SingleStat(**data)
+
+
+@attr.s
+class Table(object):
+    columns = attr.ib(default=None)
+    dataSource = attr.ib(default=None)
+    editable = attr.ib(default=None)
+    error = attr.ib(default=None)
+    fontSize = attr.ib(default=None)
+    height = attr.ib(default=None)
+    hideTimeOverride = attr.ib(default=None)
+    id = attr.ib(default=None)
+    links = attr.ib(default=attr.Factory(list))
+    pageSize = attr.ib(default=None)
+    scroll = attr.ib(default=None)
+    showHeader = attr.ib(default=None)
+    sort = attr.ib(default=None)
+    span = attr.ib(default=None)
+    styles = attr.ib(default=None)
+    targets = attr.ib(default=None)
+    timeFrom = attr.ib(default=None)
+    title = attr.ib(default=None)
+    transform = attr.ib(default=None)
+
+    def to_json_data(self):
+        return {
+            'columns': self.columns,
+            'datasource': self.dataSource,
+            'editable': self.editable,
+            'error': self.error,
+            'fontSize': self.fontSize,
+            'height': self.height,
+            'hideTimeOverride': self.hideTimeOverride,
+            'id': self.id,
+            'links': self.links,
+            'pageSize': self.pageSize,
+            'scroll': self.scroll,
+            'showHeader': self.showHeader,
+            'sort': self.sort,
+            'span': self.span,
+            'styles': self.styles,
+            'targets': self.targets,
+            'timeFrom': self.timeFrom,
+            'title': self.title,
+            'transform': self.transform,
+            'type': TABLE_TYPE,
+        }
+
+    @staticmethod
+    def parse_json_data(data):
+        if 'datasource' in data:
+            data['dataSource'] = data.pop('datasource')
+        if 'targets' in data:
+            data['targets'] = [Target.parse_json_data(target)
+                               for target in data['targets']]
+        if 'height' in data:
+            data['height'] = Pixels.parse_json_data(data['height'])
+
+        data.pop('type')
+        return Table(**data)
