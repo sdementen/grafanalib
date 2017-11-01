@@ -313,6 +313,8 @@ class Target(object):
     metric = attr.ib(default="")
     refId = attr.ib(default="")
     step = attr.ib(default=DEFAULT_STEP)
+    hide = attr.ib(default=False)
+    format = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -323,6 +325,8 @@ class Target(object):
             'metric': self.metric,
             'refId': self.refId,
             'step': self.step,
+            'hide': self.hide,
+            'format': self.format,
         }
 
     @staticmethod
@@ -366,6 +370,7 @@ class XAxis(object):
     name = attr.ib(default=None)
     values = attr.ib(default=attr.Factory(list))
     show = attr.ib(validator=instance_of(bool), default=True)
+    buckets = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -493,6 +498,9 @@ class Row(object):
     showTitle = attr.ib(default=None)
     title = attr.ib(default=None)
     repeat = attr.ib(default=None)
+    repeatIteration = attr.ib(default=None)
+    repeatRowId = attr.ib(default=None)
+    titleSize = attr.ib(default="h6")
 
     def _iter_panels(self):
         return iter(self.panels)
@@ -516,6 +524,9 @@ class Row(object):
             'showTitle': showTitle,
             'title': title,
             'repeat': self.repeat,
+            'repeatIteration': self.repeatIteration,
+            'repeatRowId': self.repeatRowId,
+            'titleSize': self.titleSize,
         }
 
     @staticmethod
@@ -953,6 +964,7 @@ class Dashboard(object):
     )
     timezone = attr.ib(default=UTC)
     version = attr.ib(default=0)
+    graphTooltip  = attr.ib(default=0)
 
     def _iter_panels(self):
         for row in self.rows:
@@ -998,6 +1010,7 @@ class Dashboard(object):
             'timepicker': self.timePicker,
             'timezone': self.timezone,
             'version': self.version,
+            'graphTooltip': self.graphTooltip,
         }
 
     def parse_json_data(data):
@@ -1073,6 +1086,9 @@ class Graph(object):
         validator=instance_of(YAxes),
     )
     alert = attr.ib(default=None)
+    dashLength = attr.ib(default=10)
+    dashes = attr.ib(default=False)
+    spaceLength = attr.ib(default=10)
 
     def to_json_data(self):
         graphObject = {
@@ -1108,6 +1124,9 @@ class Graph(object):
             'type': GRAPH_TYPE,
             'xaxis': self.xAxis,
             'yaxes': self.yAxes,
+            'dashLength': self.dashLength,
+            'dashes': self.dashes,
+            'spaceLength': self.spaceLength,
         }
         if self.alert:
             graphObject['alert'] = self.alert
@@ -1337,6 +1356,7 @@ class SingleStat(object):
     valueFontSize = attr.ib(default="80%")
     valueName = attr.ib(default=VTYPE_DEFAULT)
     valueMaps = attr.ib(default=attr.Factory(list))
+    tableColumn = attr.ib(default="")
 
     def to_json_data(self):
         return {
@@ -1376,7 +1396,8 @@ class SingleStat(object):
             'type': SINGLESTAT_TYPE,
             'valueFontSize': self.valueFontSize,
             'valueMaps': self.valueMaps,
-            'valueName': self.valueName
+            'valueName': self.valueName,
+            'tableColumn': self.tableColumn,
         }
 
     @staticmethod
