@@ -82,6 +82,9 @@ class Pixels(object):
 
     @staticmethod
     def parse_json_data(data):
+        if isinstance(data, int):
+            return Pixels(num=data)
+
         match = Pixels.REGEX.match(data)
 
         if match is not None:
@@ -1016,6 +1019,8 @@ def parse_panel(panel):
         return Graph.parse_json_data(panel)
     elif panel_type == TEXT_TYPE:
         return Text.parse_json_data(panel)
+    elif panel_type == SINGLESTAT_TYPE:
+        return SingleStat.parse_json_data(panel)
 
 
 def parse_panels(panels):
@@ -1148,6 +1153,12 @@ class SparkLine(object):
             'show': self.show,
         }
 
+    @staticmethod
+    def parse_json_data(data):
+        data['fillColor'] = RGBA.parse_json_data(data['fillColor'])
+        data['lineColor'] = RGB.parse_json_data(data['lineColor'])
+        return SparkLine(**data)
+
 
 @attr.s
 class ValueMap(object):
@@ -1194,6 +1205,10 @@ class Gauge(object):
             'thresholdLabels': self.thresholdLabels,
             'thresholdMarkers': self.thresholdMarkers,
         }
+
+    @staticmethod
+    def parse_json_data(data):
+        return Gauge(**data)
 
 
 @attr.s
@@ -1366,5 +1381,13 @@ class SingleStat(object):
 
     @staticmethod
     def parse_json_data(data):
+        if 'datasource' in data:
+            data['dataSource'] = data.pop('datasource')
+        if 'targets' in data:
+            data['targets'] = [Target.parse_json_data(target)
+                               for target in data['targets']]
+        data['gauge'] = Gauge.parse_json_data(data['gauge'])
+        data['sparkline'] = SparkLine.parse_json_data(data['sparkline'])
+
         data.pop('type')
         return SingleStat(**data)
