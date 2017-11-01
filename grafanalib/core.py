@@ -1442,6 +1442,8 @@ class SingleStat(object):
                                for target in data['targets']]
         data['gauge'] = Gauge.parse_json_data(data['gauge'])
         data['sparkline'] = SparkLine.parse_json_data(data['sparkline'])
+        data['mappingTypes'] = [Mapping.parse_json_data(map_type)
+                                for map_type in data['mappingTypes']]
 
         data.pop('type')
         return SingleStat(**data)
