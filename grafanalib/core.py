@@ -329,6 +329,11 @@ class Target(object):
     target = attr.ib(default=None)
     alias = attr.ib(default=None)
     dimensions = attr.ib(default=None)
+    metricName = attr.ib(default=None)
+    namespace = attr.ib(default=None)
+    period = attr.ib(default=None)
+    region = attr.ib(default=None)
+    statistics = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -348,6 +353,11 @@ class Target(object):
             'target': self.target,
             'alias': self.alias,
             'dimensions': self.dimensions,
+            'metricName': self.metricName,
+            'namespace': self.namespace,
+            'period': self.period,
+            'region': self.region,
+            'statistics': self.statistics,
         }
 
     @staticmethod
@@ -646,6 +656,7 @@ class DashboardLink(object):
     includeVars = attr.ib(default=None)
     tags = attr.ib(default=attr.Factory(list))
     targetBlank = attr.ib(default=None)
+    url = attr.ib(default=None)
 
     def to_json_data(self):
         title = self.dashboard if self.title is None else self.title
@@ -660,6 +671,7 @@ class DashboardLink(object):
             "includeVars": self.includeVars,
             "tags": self.tags,
             "targetBlank": self.targetBlank,
+            "url": self.url,
         }
 
     @staticmethod
@@ -1151,6 +1163,9 @@ class Graph(object):
     repeatPanelId = attr.ib(default=None)
     height = attr.ib(default=None)
     hideTimeOverride = attr.ib(default=None)
+    x_axis = attr.ib(default=None)
+    y_axis = attr.ib(default=None)
+    y_formats = attr.ib(default=None)
 
     def to_json_data(self):
         graphObject = {
@@ -1197,6 +1212,9 @@ class Graph(object):
             'repeatIteration': self.repeatIteration,
             'repeatPanelId': self.repeatPanelId,
             'hideTimeOverride': self.hideTimeOverride,
+            'x-axis': self.x_axis,
+            'y-axis': self.y_axis,
+            'y_formats': self.y_formats,
         }
         if self.alert:
             graphObject['alert'] = self.alert
@@ -1224,6 +1242,10 @@ class Graph(object):
                                for target in data['targets']]
         if 'height' in data:
             data['height'] = Pixels.parse_json_data(data['height'])
+        if 'x-axis' in data:
+            data['x_axis'] = data.pop('x-axis')
+        if 'y-axis' in data:
+            data['y_axis'] = data.pop('y-axis')
 
         data.pop('thresholds', None)  # _TODO_
         data.pop('type')
@@ -1320,6 +1342,7 @@ class Text(object):
     transparent = attr.ib(default=False, validator=instance_of(bool))
     dataSource = attr.ib(default=None)
     style = attr.ib(default=None)
+    isNew = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -1336,6 +1359,7 @@ class Text(object):
             'type': TEXT_TYPE,
             'datasource': self.dataSource,
             'style': self.style,
+            'isNew': self.isNew,
         }
 
     @staticmethod
@@ -1525,6 +1549,8 @@ class Table(object):
     timeFrom = attr.ib(default=None)
     title = attr.ib(default=None)
     transform = attr.ib(default=None)
+    transparent = attr.ib(default=None)
+    filterNull = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -1547,7 +1573,9 @@ class Table(object):
             'timeFrom': self.timeFrom,
             'title': self.title,
             'transform': self.transform,
+            'transparent': self.transparent,
             'type': TABLE_TYPE,
+            'filterNull': self.filterNull,
         }
 
     @staticmethod
