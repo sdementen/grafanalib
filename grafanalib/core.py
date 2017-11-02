@@ -235,6 +235,12 @@ class Grid(object):
     threshold1Color = attr.ib(default=GREY1, validator=instance_of(RGBA))
     threshold2 = attr.ib(default=None)
     threshold2Color = attr.ib(default=GREY2, validator=instance_of(RGBA))
+    leftLogBase = attr.ib(default=None)
+    rightLogBase = attr.ib(default=None)
+    rightMin = attr.ib(default=None)
+    rightMax = attr.ib(default=None)
+    leftMin = attr.ib(default=None)
+    leftMax = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -242,13 +248,21 @@ class Grid(object):
             'threshold1Color': self.threshold1Color,
             'threshold2': self.threshold2,
             'threshold2Color': self.threshold2Color,
+            'leftLogBase': self.leftLogBase,
+            'rightLogBase': self.rightLogBase,
+            'rightMin': self.rightMin,
+            'rightMax': self.rightMax,
+            'leftMin': self.leftMin,
+            'leftMax': self.leftMax,
         }
 
     def parse_json_data(data):
         if 'threshold1Color' in data:
-            data['threshold1Color'] = RGBA.parse_json_data(data['threshold1Color'])
+            data['threshold1Color'] = RGBA.parse_json_data(
+                data['threshold1Color'])
         if 'threshold2Color' in data:
-            data['threshold2Color'] = RGBA.parse_json_data(data['threshold2Color'])
+            data['threshold2Color'] = RGBA.parse_json_data(
+                data['threshold2Color'])
 
         return Grid(**data)
 
@@ -991,7 +1005,7 @@ class Dashboard(object):
     )
     timezone = attr.ib(default=UTC)
     version = attr.ib(default=0)
-    graphTooltip  = attr.ib(default=0)
+    graphTooltip = attr.ib(default=0)
 
     def _iter_panels(self):
         for row in self.rows:
@@ -1044,7 +1058,8 @@ class Dashboard(object):
         if '__inputs' in data:
             data['inputs'] = parse_inputs(data.pop('__inputs'))
         if 'annotations' in data:
-            data['annotations'] = Annotations.parse_json_data(data['annotations'])
+            data['annotations'] = Annotations.parse_json_data(
+                data['annotations'])
         if 'templating' in data:
             data['templating'] = Templating.parse_json_data(data['templating'])
         if 'rows' in data:
@@ -1052,7 +1067,8 @@ class Dashboard(object):
         if 'time' in data:
             data['time'] = Time.parse_json_data(data['time'])
         if 'timepicker' in data:
-            data['timePicker'] = TimePicker.parse_json_data(data.pop('timepicker'))
+            data['timePicker'] = TimePicker.parse_json_data(
+                data.pop('timepicker'))
         if 'links' in data:
             data['links'] = [DashboardLink.parse_json_data(link)
                              for link in data['links']]
@@ -1134,6 +1150,7 @@ class Graph(object):
     repeatIteration = attr.ib(default=None)
     repeatPanelId = attr.ib(default=None)
     height = attr.ib(default=None)
+    hideTimeOverride = attr.ib(default=None)
 
     def to_json_data(self):
         graphObject = {
@@ -1179,6 +1196,7 @@ class Graph(object):
             'scopedVars': self.scopedVars,
             'repeatIteration': self.repeatIteration,
             'repeatPanelId': self.repeatPanelId,
+            'hideTimeOverride': self.hideTimeOverride,
         }
         if self.alert:
             graphObject['alert'] = self.alert
@@ -1207,6 +1225,7 @@ class Graph(object):
         if 'height' in data:
             data['height'] = Pixels.parse_json_data(data['height'])
 
+        data.pop('thresholds', None)  # _TODO_
         data.pop('type')
 
         return Graph(**data)
