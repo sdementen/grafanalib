@@ -30,12 +30,12 @@ class RGBA(object):
 
     REGEX = re.compile("^rgba\((\d+), (\d+), (\d+), (\d*(?:\.\d+)(?:e-\d\d)?)\)$")
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         match = RGBA.REGEX.match(data)
 
         if match is not None:
-            return RGBA(
+            return cls(
                 int(match.group(1)),
                 int(match.group(2)),
                 int(match.group(3)),
@@ -56,12 +56,12 @@ class RGB(object):
 
     REGEX = re.compile("^rgb\((\d+), (\d+), (\d+)\)$")
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         match = RGB.REGEX.match(data)
 
         if match is not None:
-            return RGB(int(match.group(1)), int(match.group(2)),
+            return cls(int(match.group(1)), int(match.group(2)),
                        int(match.group(3)))
 
         raise ParseJsonException("Unable to parse RGB: {}".format(data))
@@ -76,15 +76,15 @@ class Pixels(object):
 
     REGEX = re.compile("^(\d+)(?:px)?$")
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if isinstance(data, int):
-            return Pixels(num=data)
+            return cls(num=data)
 
         match = Pixels.REGEX.match(data)
 
         if match is not None:
-            return Pixels(num=int(match.group(1)))
+            return cls(num=int(match.group(1)))
 
         if data == "":
             return None
@@ -101,12 +101,12 @@ class Percent(object):
 
     REGEX = re.compile("^(\d+)%$")
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         match = Percent.REGEX.match(data)
 
         if match is not None:
-            return Percent(int(match.group(1)))
+            return cls(int(match.group(1)))
 
         raise ParseJsonException("Unable to parse Percent {}".format(data))
 
@@ -222,9 +222,9 @@ class Mapping(object):
             'value': self.value,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Mapping(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 MAPPING_TYPE_VALUE_TO_TEXT = 1
@@ -275,7 +275,8 @@ class Grid(object):
             'leftMax': self.leftMax,
         }
 
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'threshold1Color' in data:
             data['threshold1Color'] = RGBA.parse_json_data(
                 data['threshold1Color'])
@@ -283,7 +284,7 @@ class Grid(object):
             data['threshold2Color'] = RGBA.parse_json_data(
                 data['threshold2Color'])
 
-        return Grid(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -324,9 +325,9 @@ class Legend(object):
             'sortDesc': self.sortDesc,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Legend(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -379,9 +380,9 @@ class Target(object):
             'statistics': self.statistics,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Target(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -400,12 +401,12 @@ class Tooltip(object):
             'value_type': self.valueType,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'value_type' in data:
             data['valueType'] = data.pop('value_type')
 
-        return Tooltip(**data)
+        return cls(**data)
 
 
 def is_valid_xaxis_mode(instance, attribute, value):
@@ -429,9 +430,9 @@ class XAxis(object):
             'show': self.show,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return XAxis(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -459,9 +460,9 @@ class YAxis(object):
             'show': self.show,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return YAxis(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -481,9 +482,9 @@ class YAxes(object):
             self.right,
         ]
 
-    @staticmethod
-    def parse_json_data(data):
-        return YAxes(left=YAxis(**data[0]), right=YAxis(**data[1]))
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(left=YAxis(**data[0]), right=YAxis(**data[1]))
 
 
 def single_y_axis(**kwargs):
@@ -581,14 +582,14 @@ class Row(object):
             'titleSize': self.titleSize,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'panels' in data:
             data['panels'] = parse_panels(data['panels'])
         if 'height' in data:
             data['height'] = Pixels.parse_json_data(data['height'])
 
-        return Row(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -600,9 +601,9 @@ class Annotations(object):
             'list': self.list,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Annotations(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 def parse_input(data):
@@ -639,9 +640,9 @@ class DataSourceInput(object):
             "type": DATASOURCE_TYPE,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return DataSourceInput(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -661,9 +662,9 @@ class ConstantInput(object):
             "value": self.value,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return ConstantInput(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -690,19 +691,23 @@ class DashboardLink(object):
             "dashboard": self.dashboard,
             "keepTime": self.keepTime,
             "title": title,
-            "type": self.type,
+            "type": self. type,
             "url": self.uri,
             "icon": self.icon,
             "includeVars": self.includeVars,
             "tags": self.tags,
             "targetBlank": self.targetBlank,
+            "asDropdown": self.asDropdown,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        if 'url' in data:
-            data['uri'] = data.pop('url')
-        return DashboardLink(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        if 'dashUri' in data:
+            data['uri'] = data.pop('dashUri')
+
+        # TODO: fix url/uri/dashUriw
+        data.pop('url')
+        return cls(**data)
 
 
 @attr.s
@@ -741,6 +746,12 @@ class Template(object):
     )
     regex = attr.ib(default=None)
     type = attr.ib(default='query')
+    hide = attr.ib(default=1)
+    options = attr.ib(default=attr.Factory(list))
+    refresh = attr.ib(default=1)
+    sort = attr.ib(default=1)
+    tagValuesQuery = attr.ib(default=None)
+    tagsQuery = attr.ib(default=None)
 
     def to_json_data(self):
         return {
@@ -751,23 +762,23 @@ class Template(object):
                 'tags': [],
             },
             'datasource': self.dataSource,
-            'hide': 0,
+            'hide': self.hide,
             'includeAll': self.includeAll,
             'label': self.label,
             'multi': self.multi,
             'name': self.name,
-            'options': [],
+            'options': self.options,
             'query': self.query,
-            'refresh': 1,
+            'refresh': self.refresh,
             'regex': self.regex,
-            'sort': 1,
-            'tagValuesQuery': None,
-            'tagsQuery': None,
+            'sort': self.sort,
+            'tagValuesQuery': self.tagValuesQuery,
+            'tagsQuery': self.tagsQuery,
             'type': 'query',
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'current' in data:
             current = data.pop('current')
             if 'text' in current:
@@ -777,15 +788,7 @@ class Template(object):
         if 'datasource' in data:
             data['dataSource'] = data.pop('datasource')
 
-        # Deleted values
-        data.pop('hide', None)
-        data.pop('options', None)
-        data.pop('refresh', None)
-        data.pop('sort', None)
-        data.pop('tagValuesQuery', None)
-        data.pop('tagsQuery', None)
-
-        return Template(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -797,9 +800,9 @@ class Templating(object):
             'list': self.list,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Templating(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -813,11 +816,11 @@ class Time(object):
             'to': self.end,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         data['start'] = data.pop('from')
         data['end'] = data.pop('to')
-        return Time(**data)
+        return cls(**data)
 
 
 DEFAULT_TIME = Time('now-1h', 'now')
@@ -845,14 +848,14 @@ class TimePicker(object):
             'status': self.status,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'refresh_intervals' in data:
             data['refreshIntervals'] = data.pop('refresh_intervals')
         if 'time_options' in data:
             data['timeOptions'] = data.pop('time_options')
 
-        return TimePicker(**data)
+        return cls(**data)
 
 
 DEFAULT_TIME_PICKER = TimePicker(
@@ -893,9 +896,9 @@ class Evaluator(object):
             "params": self.params,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Evaluator(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 def GreaterThan(value):
@@ -936,9 +939,12 @@ class TimeRange(object):
     def to_json_data(self):
         return [self.from_time, self.to_time]
 
-    @staticmethod
-    def parse_json_data(data):
-        return TimeRange(from_time=data[0], to_time=data[1])
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(
+            from_time=Time.parse_json_data(data[0]),
+            to_time=Time.parse_json_data(data[1])
+        )
 
 
 @attr.s
@@ -986,9 +992,25 @@ class AlertCondition(object):
             "type": self.type,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return AlertCondition(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        if 'evaluator' in data:
+            data['evaluator'] = Evaluator.parse_json_data(data['evaluator'])
+
+        if 'operator' in data:
+            data['operator'] = data.pop('operator')['type']
+
+        if 'query' in data:
+            query = data.pop('query')
+            data['target'] = Target.parse_json_data(query['model'])
+            refId, *timeRange = query['params']
+            data['target'].refId = refId
+            data['timeRange'] = TimeRange.parse_json_data(timeRange)
+
+        if 'reducer' in data:
+            data['reducerType'] = data.pop('reducer')['type']
+
+        return cls(**data)
 
 
 @attr.s
@@ -1015,9 +1037,11 @@ class Alert(object):
             "notifications": self.notifications,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Alert(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        if 'conditions' in data:
+            data['alertConditions'] = data.pop('conditions')
+        return cls(**data)
 
 
 @attr.s
@@ -1112,7 +1136,8 @@ class Dashboard(object):
             'graphTooltip': self.graphTooltip,
         }
 
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if '__inputs' in data:
             data['inputs'] = parse_inputs(data.pop('__inputs'))
         if 'annotations' in data:
@@ -1131,7 +1156,7 @@ class Dashboard(object):
             data['links'] = [DashboardLink.parse_json_data(link)
                              for link in data['links']]
 
-        return Dashboard(**data)
+        return cls(**data)
 
 
 def parse_panel(panel):
@@ -1204,12 +1229,10 @@ class Graph(object):
     spaceLength = attr.ib(default=10)
     decimals = attr.ib(default=None)
     minSpan = attr.ib(default=None)
-    transparent = attr.ib(default=None)
     repeat = attr.ib(default=None)
     scopedVars = attr.ib(default=None)
     repeatIteration = attr.ib(default=None)
     repeatPanelId = attr.ib(default=None)
-    height = attr.ib(default=None)
     hideTimeOverride = attr.ib(default=None)
     x_axis = attr.ib(default=None)
     y_axis = attr.ib(default=None)
@@ -1268,8 +1291,8 @@ class Graph(object):
             graphObject['alert'] = self.alert
         return graphObject
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         data['dataSource'] = data.pop('datasource')
         if 'linewidth' in data:
             data['lineWidth'] = data.pop('linewidth')
@@ -1288,16 +1311,17 @@ class Graph(object):
         if 'targets' in data:
             data['targets'] = [Target.parse_json_data(target)
                                for target in data['targets']]
-        if 'height' in data:
-            data['height'] = Pixels.parse_json_data(data['height'])
         if 'x-axis' in data:
             data['x_axis'] = data.pop('x-axis')
         if 'y-axis' in data:
             data['y_axis'] = data.pop('y-axis')
+        if 'links' in data:
+            data['links'] = [DashboardLink.parse_json_data(link)
+                             for link in data['links']]
+        if 'alert' in data:
+            data['alert'] = Alert.parse_json_data(data['alert'])
 
-        data.pop('thresholds', None)  # _TODO_
-
-        return Graph(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -1315,13 +1339,13 @@ class SparkLine(object):
             'show': self.show,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'fillColor' in data:
             data['fillColor'] = RGBA.parse_json_data(data['fillColor'])
         if 'lineColor' in data:
             data['lineColor'] = RGB.parse_json_data(data['lineColor'])
-        return SparkLine(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -1337,9 +1361,9 @@ class ValueMap(object):
             'value': self.value,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return ValueMap(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -1355,9 +1379,9 @@ class RangeMap(object):
             'text': self.text,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return RangeMap(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -1378,9 +1402,9 @@ class Gauge(object):
             'thresholdMarkers': self.thresholdMarkers,
         }
 
-    @staticmethod
-    def parse_json_data(data):
-        return Gauge(**data)
+    @classmethod
+    def parse_json_data(cls, data):
+        return cls(**data)
 
 
 @attr.s
@@ -1420,11 +1444,15 @@ class Text(object):
             'isNew': self.isNew,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'datasource' in data:
             data['dataSource'] = data.pop('datasource')
-        return Text(**data)
+        if 'links' in data:
+            data['links'] = [DashboardLink.parse_json_data(link)
+                             for link in data['links']]
+
+        return cls(**data)
 
 
 @attr.s
@@ -1568,8 +1596,8 @@ class SingleStat(object):
             'timeShift': self.timeShift,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'colors' in data:
             data['colors'] = [RGBA.parse_json_data(color)
                               for color in data['colors']]
@@ -1587,8 +1615,17 @@ class SingleStat(object):
                                     for map_type in data['mappingTypes']]
         if 'height' in data:
             data['height'] = Pixels.parse_json_data(data['height'])
+        if 'links' in data:
+            data['links'] = [DashboardLink.parse_json_data(link)
+                             for link in data['links']]
+        if 'rangeMaps' in data:
+            data['rangeMaps'] = [RangeMap.parse_json_data(rmap)
+                                 for rmap in data['rangeMaps']]
+        if 'valueMaps' in data:
+            data['valueMaps'] = [ValueMap.parse_json_data(vmap)
+                                 for vmap in data['valueMaps']]
 
-        return SingleStat(**data)
+        return cls(**data)
 
 
 @attr.s
@@ -1642,8 +1679,8 @@ class Table(object):
             'filterNull': self.filterNull,
         }
 
-    @staticmethod
-    def parse_json_data(data):
+    @classmethod
+    def parse_json_data(cls, data):
         if 'datasource' in data:
             data['dataSource'] = data.pop('datasource')
         if 'targets' in data:
@@ -1651,5 +1688,8 @@ class Table(object):
                                for target in data['targets']]
         if 'height' in data:
             data['height'] = Pixels.parse_json_data(data['height'])
+        if 'links' in data:
+            data['links'] = [DashboardLink.parse_json_data(link)
+                             for link in data['links']]
 
-        return Table(**data)
+        return cls(**data)
