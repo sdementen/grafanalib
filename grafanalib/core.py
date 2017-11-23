@@ -416,7 +416,6 @@ class Target(object):
             'calculatedInterval': self.calculatedInterval,
             'datasourceErrors': self.datasourceErrors,
             'errors': self.errors,
-            'interval': self.interval,
             'target': self.target,
             'alias': self.alias,
             'dimensions': self.dimensions,
