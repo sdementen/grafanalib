@@ -1233,7 +1233,7 @@ class Graph(object):
     error = attr.ib(default=False, validator=instance_of(bool))
     fill = attr.ib(default=1, validator=instance_of(int))
     grid = attr.ib(default=attr.Factory(Grid), validator=instance_of(Grid))
-    height = attr.ib(default=None)
+    height = attr.ib(default=None, validator=optional(instance_of(Pixels)))
     id = attr.ib(default=None)
     isNew = attr.ib(default=True, validator=instance_of(bool))
     legend = attr.ib(
@@ -1463,7 +1463,7 @@ class Text(object):
     content = attr.ib()
     editable = attr.ib(default=True, validator=instance_of(bool))
     error = attr.ib(default=False, validator=instance_of(bool))
-    height = attr.ib(default=None)
+    height = attr.ib(default=None, validator=optional(instance_of(Pixels)))
     id = attr.ib(default=None)
     links = attr.ib(default=attr.Factory(list))
     mode = attr.ib(default=TEXT_MODE_MARKDOWN)
@@ -1498,6 +1498,7 @@ class Text(object):
         new_data = transform_dict(
             data,
             dicttransform('datasource', 'dataSource'),
+            dicttransform('height', transform=Pixels.parse_json_data),
             dicttransform(
                 'links',
                 transform=foreach(DashboardLink.parse_json_data)
@@ -1571,7 +1572,7 @@ class SingleStat(object):
     format = attr.ib(default="none")
     gauge = attr.ib(default=attr.Factory(Gauge),
                     validator=instance_of(Gauge))
-    height = attr.ib(default=None)
+    height = attr.ib(default=None, validator=optional(instance_of(Pixels)))
     hideTimeOverride = attr.ib(default=False, validator=instance_of(bool))
     id = attr.ib(default=None)
     interval = attr.ib(default=None)
@@ -1687,7 +1688,7 @@ class Table(object):
     editable = attr.ib(default=None)
     error = attr.ib(default=None)
     fontSize = attr.ib(default=None)
-    height = attr.ib(default=None)
+    height = attr.ib(default=None, validator=optional(instance_of(Pixels)))
     hideTimeOverride = attr.ib(default=None)
     id = attr.ib(default=None)
     links = attr.ib(default=attr.Factory(list))
