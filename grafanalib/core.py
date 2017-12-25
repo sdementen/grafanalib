@@ -79,9 +79,13 @@ class RGBA(object):
         "^rgba\((\d+), (\d+), (\d+), (\d*(?:\.\d+)(?:e-\d\d)?)\)$"
     )
 
+    REGEX_HEX = re.compile(
+        "^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$"
+    )
+
     @classmethod
     def parse_json_data(cls, data):
-        match = RGBA.REGEX.match(data)
+        match = cls.REGEX.match(data)
 
         if match is not None:
             return cls(
@@ -89,6 +93,16 @@ class RGBA(object):
                 int(match.group(2)),
                 int(match.group(3)),
                 float(match.group(4))
+            )
+
+        match = cls.REGEX_HEX.match(data)
+
+        if match is not None:
+            return cls(
+                int(match.group(1), 16),
+                int(match.group(2), 16),
+                int(match.group(3), 16),
+                1.,
             )
 
         raise ParseJsonException("Unable to parse RGBA: {}".format(data))
